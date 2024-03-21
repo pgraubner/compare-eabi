@@ -2,13 +2,16 @@
 
 import subprocess
 import io
+import shutil
+import sys
+import os
+import argparse
 
 from arm_eabi_diagnostics import Diagnostics
-from arm_tags import *
+from arm_tags import Tags, AttributeTypes, DEFAULT
 
-EMPTY = '<EMPTY>'
-
-class bcolors:
+class Colors:
+    """"""
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -20,384 +23,366 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 def all_equal(elements):
-   if len(elements) == 0:
-      return True
-   first = None
-   for item in elements:
-      if first == None:
-         first = item
-         continue
-      if item != first:
-         return False
-   return True
-
-def all_equal_or_empty(elements):
-   first = EMPTY
-   for item in elements:
-      if item == EMPTY:
-         continue
-      if item != first:
-         if first != EMPTY:
+    if len(elements) == 0:
+        return True
+    first = None
+    for item in elements:
+        if first == None:
+            first = item
+            continue
+        if item != first:
             return False
-         first = item
+    return True
 
-   return True
+def all_equal_or_default(elements):
+    first = DEFAULT
+    for item in elements:
+        if item == DEFAULT:
+            continue
+        if item != first:
+            if first != DEFAULT:
+                return False
+            first = item
 
-def all_empty(elements):
-    return all(x == EMPTY for x in elements)
+    return True
+
+def all_default(elements):
+    return all(x == DEFAULT for x in elements)
 
 class ObjFilelist:
-   def __init__(self) -> None:
-      self.__objfiles = []
+    def __init__(self) -> None:
+        self.__objfiles = []
 
-   @staticmethod
-   def from_array(arr):
-      result = ObjFilelist()
-      result.__objfiles = arr
+    @staticmethod
+    def from_array(arr):
+        result = ObjFilelist()
+        result.__objfiles = arr
 
-      return result
+        return result
 
-   def objfiles(self):
-      return self.__objfiles
+    def objfiles(self):
+        return self.__objfiles
 
-   def compare(self):
-      objs = []
-      for o in self.__objfiles:
-         if o.is_archive():
-            objs.append(o.restrictions())
-            #objs += o.objfiles()
-         else:
-            objs.append(o)
+    def compare(self):
+        objs = []
+        for o in self.__objfiles:
+            if o.is_archive():
+                objs.append(o.restrictions())
+                #objs += o.objfiles()
+            else:
+                objs.append(o)
 
-      attrs = {}
-      for tag in Tags.keys():
-         attrs[tag] = {}
-         for obj in objs:
-            val = EMPTY
-            if tag in obj.attrs():
-               val = obj.attrs()[tag]
-            attrs[tag][obj.filename()] = val
+        attrs = {}
+        for tag in Tags.get_tags():
+            attrs[tag] = {}
+            for obj in objs:
+                val = DEFAULT
+                if tag in obj.attrs():
+                    val = obj.attrs()[tag]
+                attrs[tag][obj.filename()] = val
 
-      result = Diff(attrs)
-      return result
+        result = Diff(attrs)
+        return result
 
-   def __repr__(self) -> str:
-      return repr(self.__objfiles)
+    def __repr__(self) -> str:
+        return repr(self.__objfiles)
+
+def write_tag_verbose(result, tag, val):
+    result.write(Colors.HEADER)
+    write_tag(result, tag, val)
+    result.write(Colors.ENDC)
+    result.write(Diagnostics[tag])
+    result.write("\n")
+
+def write_tag(result, tag, val):
+    tag_info = Tags.get_tag_info(tag)
+    fmt = "| {:<30} | {:<50} | {:>5} | {:<7} |"
+    if tag_info.is_string():
+        if val == DEFAULT:
+            val = "{} (Default)".format(tag_info.get_default())
+
+        result.write(fmt.format(tag, val, "", tag_info.datatype()))
+    else:
+        if val == DEFAULT:
+            val = "{} (Default)".format(tag_info.get_default())
+            num = 0
+        else:
+            num = tag_info.index(val)
+        result.write(fmt.format(tag, val, "{:#x}".format(num), tag_info.datatype()))
+
+    result.write("\n")
 
 
 class Diff:
-   DIFF_PROPERTIES = {'identical': {'header': 'Identical tags\n', 'color': bcolors.OKGREEN},
-               'identical-or-empty': {'header': 'Identical tags with empty values\n', 'color': bcolors.OKGREEN},
-               'non-identical': {'header': 'Tags with non-identical (possibly conflicting) values\n', 'color': bcolors.FAIL}
-               }
+    DIFF_PROPERTIES = {'identical': {'header': 'Identical tags\n', 'color': Colors.OKGREEN},
+                    #'identical-or-default': {'header': 'Identical tags with default values\n', 'color': Colors.WARNING},
+                    'non-identical': {'header': 'Tags with non-identical values (possibly conflicting)\n', 'color': Colors.FAIL}
+                    }
 
-   def __init__(self, attrs) -> None:
-      self.__attrs = attrs
-      self.__read_attrs()
+    def __init__(self, attrs) -> None:
+        self.__attrs = attrs
+        self.__read_attrs()
 
-   def __read_attrs(self):
-      self.__properties = {}
-      for p in Diff.DIFF_PROPERTIES:
-         self.__properties[p] = []
+    def __read_attrs(self):
+        self.__properties = {}
+        for p in Diff.DIFF_PROPERTIES:
+            self.__properties[p] = []
 
-      for attr, val in self.__attrs.items():
-         if all_equal(val.values()):
-            if all_empty(val.values()):
-               continue
-            self.__properties['identical'].append(attr)
-         elif all_equal_or_empty(val.values()):
-            self.__properties['identical-or-empty'].append(attr)
-         else:
-            self.__properties['non-identical'].append(attr)
+        for attr, val in self.__attrs.items():
+            if all_equal(val.values()):
+                if all_default(val.values()):
+                    continue
+                self.__properties['identical'].append(attr)
+            elif all_equal_or_default(val.values()):
+                #self.__properties['identical-or-default'].append(attr)
+                self.__properties['non-identical'].append(attr)
+            else:
+                self.__properties['non-identical'].append(attr)
 
-   def property(self, prop):
-      return self.__properties[prop]
+    def property(self, prop):
+        return self.__properties[prop]
 
-   def __repr__(self) -> str:
-      result = io.StringIO()
+    def __repr__(self) -> str:
+        result = io.StringIO()
 
-      def write_attr(attr, val):
-         if verbose:
-            result.write(attr)
-            result.write(":")
-            result.write(repr(val))
-            result.write(Diagnostics[attr])
-         else:
-            result.write(attr)
-            result.write(":")
-            result.write(repr(val))
-
-      def write_property(key):
-         property = Diff.DIFF_PROPERTIES[key]
-         result.write(bcolors.HEADER)
-         result.write(property['header'])
-         result.write(bcolors.ENDC)
-
-         for attr in self.property(key):
-            result.write(property['color'])
-            write_attr(attr, self.__attrs[attr])
-            result.write(bcolors.ENDC)
+        def write_property(key):
+            property = Diff.DIFF_PROPERTIES[key]
+            result.write(Colors.HEADER)
+            result.write(property['header'])
+            result.write("-" * len(property['header']))
             result.write("\n")
+            result.write(Colors.ENDC)
 
-      for p in Diff.DIFF_PROPERTIES:
-         write_property(p)
+            for tag in self.property(key):
+                result.write(property['color'])
+                attr_dict = self.__attrs[tag]
 
-      return result.getvalue()
+                for fn, val in attr_dict.items():
+                    result.write("| {:<15} ".format( os.path.basename(fn)) )
+                    write_tag(result, tag, val)
+
+                result.write(Colors.ENDC)
+                if verbose:
+                    result.write(Diagnostics[tag])
+                result.write("\n")
+
+        for p in Diff.DIFF_PROPERTIES:
+            write_property(p)
+
+        return result.getvalue()
 
 
 class ArchiveFile:
-   def __init__(self, fn) -> None:
-      self.__fn = fn
-      self.__objfiles = ObjFilelist()
+    def __init__(self, fn) -> None:
+        self.__fn = fn
+        self.__objfiles = ObjFilelist()
 
-   def is_archive(self):
-      return True
+    def is_archive(self):
+        return True
 
-   def objfiles(self):
-      return self.__objfiles.objfiles()
+    def objfiles(self):
+        return self.__objfiles.objfiles()
 
-   def restrictions(self):
-      attrs = {}
-      for tag in Tags.keys():
-         val = None
-         for obj in self.__objfiles.objfiles():
-            if tag in obj.attrs():
-               if val is None:
-                  val = obj.attrs()[tag]
-               else:
-                  assert val == obj.attrs()[tag]
-               break
-         if val is not None:
-            attrs[tag] = val
+    def restrictions(self):
+        attrs = {}
+        for tag in Tags.get_tags():
+            val = None
+            for obj in self.__objfiles.objfiles():
+                if tag in obj.attrs():
+                    if val is None:
+                        val = obj.attrs()[tag]
+                    else:
+                        assert val == obj.attrs()[tag]
+                    break
+            if val is not None:
+                attrs[tag] = val
 
-      result = ObjFile(self.__fn, attrs)
-      return result
+        result = ObjFile(self.__fn, attrs)
+        return result
 
-   @staticmethod
-   def from_file(filename):
-      global readelf
-      out = subprocess.run([readelf, "-A", filename], stdout=subprocess.PIPE)
-      buf = io.StringIO(out.stdout.decode('utf-8'))
+    @staticmethod
+    def from_file(filename):
+        global readelf
+        out = subprocess.run([readelf, "-A", filename], stdout=subprocess.PIPE)
+        buf = io.StringIO(out.stdout.decode('utf-8'))
 
-      result = ArchiveFile(filename)
-      arr = []
+        result = ArchiveFile(filename)
+        arr = []
 
-      while not buf.closed:
-         line = buf.readline()
-         if line == "\n":
-            continue
-         if line == "":
-            break
-         _, fn = line.split(":")
-         arr.append(ObjFile.from_buf(fn, buf))
+        while not buf.closed:
+            line = buf.readline()
+            if line == "\n":
+                continue
+            if line == "":
+                break
+            _, fn = line.split(":")
+            arr.append(ObjFile.from_buf(fn, buf))
 
-      result.__objfiles = ObjFilelist.from_array(arr)
-      return result
+        result.__objfiles = ObjFilelist.from_array(arr)
+        return result
 
-   def __repr__(self) -> str:
-      return repr(self.__objfiles)
+    def __repr__(self) -> str:
+        return repr(self.__objfiles)
 
-   def filename(self):
-      return self.__fn
+    def filename(self):
+        return self.__fn
 
 
 class ObjFile:
-   def __init__(self, fn, attrs) -> None:
-      self.__fn = fn
-      self.__attrs = attrs
+    def __init__(self, fn, attrs) -> None:
+        self.__fn = fn
+        self.__attrs = attrs
 
-   def is_archive(self):
-      return False
+    def is_archive(self):
+        return False
 
-   def attrs(self):
-      return self.__attrs
+    def attrs(self):
+        return self.__attrs
 
-   @staticmethod
-   def from_file(filename):
-      out = subprocess.run([readelf, "-A", filename], stdout=subprocess.PIPE)
-      buf = io.StringIO(out.stdout.decode('utf-8'))
-      return ObjFile.from_buf(filename, buf)
+    @staticmethod
+    def from_objfile(filename):
+        out = subprocess.run([readelf, "-A", filename], stdout=subprocess.PIPE)
+        buf = io.StringIO(out.stdout.decode('utf-8'))
+        return ObjFile.from_buf(filename, buf)
 
-   @staticmethod
-   def from_buf(filename, buf):
-      global readelf
+    @staticmethod
+    def from_txtfile(filename):
+        out = open(filename, "r").read()
+        buf = io.StringIO(out)
+        return ObjFile.from_buf(filename, buf)
 
-      attrs = {}
-      section_name = ""
+    @staticmethod
+    def from_buf(filename, buf):
+        attrs = {}
+        section_name = ""
 
-      state = 'SECTION'
-      while not buf.closed:
-         line = buf.readline()
-         if line == "\n" or line == "":
-            break
+        state = 'SECTION'
+        while not buf.closed:
+            line = buf.readline()
+            if line == "\n" or line == "":
+                break
 
-         if state == 'SECTION':
-            _, section_name = line.split(":")
-            section_name = section_name.strip()
-            state = 'ATTRIBUTES'
-            continue
+            if state == 'SECTION':
+                _, section_name = line.split(":")
+                section_name = section_name.strip()
+                state = 'ATTRIBUTES'
+                continue
 
-         if state == 'ATTRIBUTES':
-            if line == "File Attributes\n":
-               continue
-            key, value = line.split(":")
-            attrs[key.strip()] = value.strip()
+            if state == 'ATTRIBUTES':
+                if line == "File Attributes\n":
+                    continue
+                key, value = line.split(":")
+                value = value.strip()
+                key = key.strip()
 
-      result = ObjFile(filename, attrs)
-      return result
+                # add attribute
+                info = Tags.get_tag_info(key)
+                if info.attr_type() in filter:
+                    attrs[key] = value
 
-   def __repr__(self) -> str:
-      result = io.StringIO()
-      result.write(bcolors.BOLD)
-      result.write(self.filename())
-      result.write(bcolors.ENDC)
-      result.write("\n")
+        result = ObjFile(filename, attrs)
+        return result
 
-      for attr, val in self.__attrs.items():
-         num = None
-         info = get_tag_info(attr)
-         if info is not None:
-            num = info.index(val)
-         if verbose:
-            result.write(bcolors.HEADER)
-            result.write(attr)
-            result.write(": ")
-            result.write(val)
-            if num is not None:
-               result.write(" ({})".format(num))
-            result.write(bcolors.ENDC)
-            result.write(Diagnostics[attr])
-         else:
-            result.write(attr)
-            result.write(": ")
-            result.write(val)
-            if num is not None:
-               result.write(" ({})".format(num))
-         result.write("\n")
+    def __repr__(self) -> str:
+        result = io.StringIO()
+        result.write(Colors.BOLD)
+        result.write(self.filename())
+        result.write(Colors.ENDC)
+        result.write("\n")
 
-      return result.getvalue()
-
-   def compare(self, other):
-      assert self._section_name == other._section_name
-
-      delta =  {}
-      for attr in self.__attrs.keys():
-            a = self.__attrs[attr]
-            if attr in other._attrs:
-               b = other._attrs[attr]
-               if a != b:
-                  delta[attr] = ((self.__fn, a), (other._fn, b))
+        for attr, val in self.__attrs.items():
+            if verbose:
+                write_tag_verbose(result, attr, val)
             else:
-               delta[attr] = (self.__fn, a)
+                write_tag(result, attr, val)
 
-      for attr in other._attrs.keys():
-            if attr in delta:
-               continue
-            if attr not in self.__attrs:
-               b = other._attrs[attr]
-               if a != b:
-                  delta[attr] = (other._fn, b)
-      return delta
+        return result.getvalue()
 
-   def filename(self):
-      return self.__fn
+    def filename(self):
+        return self.__fn
 
 def diff(objfiles):
     objs = ObjFilelist.from_array(objfiles)
     print(objs.compare())
 
 def details(objfiles):
-   global verbose
-   for o in objfiles:
-      print(o)
+    for o in objfiles:
+        print(o)
 
-def link(objfiles):
-   global ld
-   global ldflags
-   global ldstaticlibs
+def explain(tag):
+    if tag not in Tags.get_tags():
+        print("Error: {} not a valid tag".format(tag))
+        sys.exit(1)
+    if tag not in Diagnostics:
+        print("Error: {} has no diagnostics information".format(tag))
+        sys.exit(1)
+    print(Colors.BOLD, tag, Colors.ENDC)
+    print(Diagnostics[tag])
 
-   import tempfile
-   with tempfile.TemporaryDirectory() as tmpdirname:
-      files = [obj.filename() for obj in objfiles]
-      elffile = "{}/test.elf".format(tmpdirname)
-      flags = ldflags.split(" ") if ldflags != "" else []
-      staticlibs = ldstaticlibs.split(" ") if ldstaticlibs != "" else []
-      out = subprocess.run([ld, "-o", elffile, *flags, *files, *staticlibs])
-      if out.returncode == 0:
-         details([ObjFile.from_file(elffile)])
 
 readelf = "readelf"
 verbose = False
-ld = "ld"
-ldflags = ""
-ldstaticlibs = ""
+filter = AttributeTypes.all()
 
 if __name__ == '__main__':
-   import shutil
-   import sys
-   import os
-   import argparse
+    parser = argparse.ArgumentParser(
+                        prog='eabi-helper',
+                        description='helps interpreting objects file in ARM32 ABI')
+    parser.add_argument('--filter', nargs='+')
+    parser.add_argument('--textfiles', nargs='+')
+    parser.add_argument('--objfiles', nargs='+')
+    parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('--diff', action='store_true')
+    parser.add_argument('--readelf', nargs=1)
+    parser.add_argument('--explain', action='store', type=str)
 
-   parser = argparse.ArgumentParser(
-                  prog='eabi-helper',
-                  description='helps interpreting objects file in ARM32 ABI')
-   parser.add_argument('--objfiles', nargs='+')
-   parser.add_argument('--verbose', action='store_true')
-   parser.add_argument('--diff', action='store_true')
-   parser.add_argument('--link', action='store_true')
-   parser.add_argument('--readelf', nargs=1)
-   parser.add_argument('--ld', nargs=1)
-   parser.add_argument('--ldflags', nargs=1)
-   parser.add_argument('--ldstaticlibs', nargs=1)
-   parser.add_argument('--explain', action='store', type=str)
+    args = parser.parse_args()
 
-   args = parser.parse_args()
+    if args.explain is not None:
+        explain(args.explain)
+    if args.readelf is not None:
+        readelf = args.readelf[0]
 
-   if args.explain is not None:
-      if args.explain not in Tags:
-         print("Error: {} not a valid tag".format(args.explain))
-         sys.exit(1)
-      if args.explain not in Diagnostics:
-         print("Error: {} has no diagnostics information".format(args.explain))
-         sys.exit(1)
-      print(bcolors.BOLD, args.explain, bcolors.ENDC)
-      print(Diagnostics[args.explain])
+    verbose = args.verbose
 
-   if args.readelf is not None:
-      readelf = args.readelf[0]
-   if args.ld is not None:
-      ld = args.ld[0]
-   if args.ldflags is not None:
-      ldflags = args.ldflags[0]
-   if args.ldstaticlibs is not None:
-      ldstaticlibs = args.ldstaticlibs[0]
+    path = shutil.which(readelf)
+    if path is None:
+        print("Error: {} not found".format(readelf))
+        sys.exit(1)
 
-   verbose = args.verbose
+    if args.filter is not None:
+        filter = []
+        for f in args.filter:
+            if not AttributeTypes.is_attr_type(f):
+                print("Error: unknown attribute {}".format(f))
+                sys.exit(1)
+            filter.append(f)
 
-   path = shutil.which(readelf)
-   if path is None:
-      print("Error: {} not found".format(readelf))
-      sys.exit(1)
-   path = shutil.which(ld)
-   if path is None:
-      print("Error: {} not found".format(ld))
-      sys.exit(1)
 
-   if args.objfiles is not None:
-      objfiles = []
-      for o in args.objfiles:
-         if not os.path.exists(o):
-            print("Error: {} not found".format(o))
-            sys.exit(1)
+    objfiles = []
+    if args.textfiles is not None:
+        for o in args.textfiles:
+            if not os.path.exists(o):
+                print("Error: {} not found".format(o))
+                sys.exit(1)
+            objfiles.append(ObjFile.from_txtfile(o))
 
-         if o.endswith(".a") or o.endswith(".rlib"):
-            objfiles.append(ArchiveFile.from_file(o))
-         else:
-            objfiles.append(ObjFile.from_file(o))
+    if args.objfiles is not None:
+        for o in args.objfiles:
+            if not os.path.exists(o):
+                print("Error: {} not found".format(o))
+                sys.exit(1)
 
-      if args.diff:
-         diff(objfiles)
-      elif args.link:
-         link(objfiles)
-      else:
-         details(objfiles)
+            if o.endswith(".a") or o.endswith(".rlib"):
+                objfiles.append(ArchiveFile.from_file(o))
+            else:
+                objfiles.append(ObjFile.from_objfile(o))
+
+    if len(objfiles) == 0:
+        print("Error: nothing to do")
+        sys.exit(1)
+
+    if args.diff:
+        diff(objfiles)
+    else:
+        details(objfiles)

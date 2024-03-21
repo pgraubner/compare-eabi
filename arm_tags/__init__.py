@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 
-def get_tag_info(name):
-   tag = Tags[name]
-   return tag[2]
 
-_Tag_CPU_arch=[
+Tag_CPU_arch=[
   "Pre-v4",
   "v4",
   "v4T",
@@ -29,38 +26,17 @@ _Tag_CPU_arch=[
   "v8.1-M.mainline",
   "v9"]
 
-class Tag_CPU_arch:
-  def index(str):
-    return _Tag_CPU_arch.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ARM_ISA_use = [
+Tag_ARM_ISA_use = [
  "No",
  "Yes"
 ]
-class Tag_ARM_ISA_use:
- def index(str):
-    return _Tag_ARM_ISA_use.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_THUMB_ISA_use = [
+Tag_THUMB_ISA_use = [
   "No",
   "Thumb-1",
   "Thumb-2",
   "Yes"
 ]
-class Tag_THUMB_ISA_use:
-  def index(str):
-    return _Tag_THUMB_ISA_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_FP_arch = [
+Tag_FP_arch = [
   "No",
   "VFPv1",
   "VFPv2",
@@ -71,40 +47,19 @@ _Tag_FP_arch = [
   "FP for ARMv8",
   "FPv5/FP-D16 for ARMv8"
 ]
-class Tag_FP_arch:
-  def index(str):
-    return _Tag_FP_arch.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_WMMX_arch = [
+Tag_WMMX_arch = [
  "No"
  "WMMXv1"
  "WMMXv2"
 ]
-class Tag_WMMX_arch:
- def index(str):
-    return _Tag_WMMX_arch.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_Advanced_SIMD_arch = [
+Tag_Advanced_SIMD_arch = [
   "No",
   "NEONv1",
   "NEONv1 with Fused-MAC",
   "NEON for ARMv8",
   "NEON for ARMv8.1"
 ]
-class Tag_Advanced_SIMD_arch:
-  def index(str):
-    return _Tag_Advanced_SIMD_arch.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_PCS_config = [
+Tag_PCS_config = [
   "None",
   "Bare platform",
   "Linux application",
@@ -114,187 +69,82 @@ _Tag_PCS_config = [
   "SymbianOS 2004",
   "SymbianOS (reserved)"
 ]
-class Tag_PCS_config:
-  def index(str):
-    return _Tag_PCS_config.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_PCS_R9_use = [
+Tag_ABI_PCS_R9_use = [
   "V6",
   "SB",
   "TLS",
   "Unused"
 ]
-class Tag_ABI_PCS_R9_use:
-  def index(str):
-    return _Tag_ABI_PCS_R9_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_PCS_RW_data = [
+Tag_ABI_PCS_RW_data = [
   "Absolute",
   "PC-relative",
   "SB-relative",
   "None"
 ]
-class Tag_ABI_PCS_RW_data:
-  def index(str):
-    return _Tag_ABI_PCS_RW_data.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_PCS_RO_data = [
+Tag_ABI_PCS_RO_data = [
   "Absolute",
   "PC-relative",
   "None"
 ]
-class Tag_ABI_PCS_RO_data:
-  def index(str):
-    return _Tag_ABI_PCS_RO_data.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_PCS_GOT_use = [
+Tag_ABI_PCS_GOT_use = [
   "None",
   "direct",
   "GOT-indirect"
 ]
-class Tag_ABI_PCS_GOT_use:
-  def index(str):
-    return _Tag_ABI_PCS_GOT_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_PCS_wchar_t = [
+Tag_ABI_PCS_wchar_t = [
   "None",
   "??? 1",
   "2",
   "??? 3",
   "4"
 ]
-class Tag_ABI_PCS_wchar_t:
-  def index(str):
-    return _Tag_ABI_PCS_wchar_t.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_FP_rounding = [
+Tag_ABI_FP_rounding = [
  "Unused"
  "Needed"
 ]
-class Tag_ABI_FP_rounding:
- def index(str):
-    return _Tag_ABI_FP_rounding.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_ABI_FP_denormal = [
+Tag_ABI_FP_denormal = [
   "Unused",
   "Needed",
   "Sign only"
 ]
-class Tag_ABI_FP_denormal:
-  def index(str):
-    return _Tag_ABI_FP_denormal.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_FP_exceptions = [
+Tag_ABI_FP_exceptions = [
  "Unused",
  "Needed"
 ]
-class Tag_ABI_FP_exceptions:
- def index(str):
-    return _Tag_ABI_FP_exceptions.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_ABI_FP_user_exceptions = [
+Tag_ABI_FP_user_exceptions = [
  "Unused",
  "Needed"
 ]
-class Tag_ABI_FP_user_exceptions:
- def index(str):
-    return _Tag_ABI_FP_user_exceptions.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_ABI_FP_number_model = [
+Tag_ABI_FP_number_model = [
   "Unused",
   "Finite",
   "RTABI",
   "IEEE 754"
 ]
-class Tag_ABI_FP_number_model:
-  def index(str):
-    return _Tag_ABI_FP_number_model.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_IntEnum_size = [
+Tag_ABI_IntEnum_size = [
   "Unused",
   "small",
   "int",
   "forced to int"
 ]
-class Tag_ABI_IntEnum_size:
-  def index(str):
-    return _Tag_ABI_IntEnum_size.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_HardFP_use = [
+Tag_ABI_HardFP_use = [
   "As Tag_FP_arch",
   "SP only",
   "Reserved",
   "Deprecated"
 ]
-class Tag_ABI_HardFP_use:
-  def index(str):
-    return _Tag_ABI_HardFP_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_VFP_args = [
+Tag_ABI_VFP_args = [
   "AAPCS",
   "VFP registers",
   "custom",
   "compatible"
 ]
-class Tag_ABI_VFP_args:
-  def index(str):
-    return _Tag_ABI_VFP_args.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_WMMX_args = [
+Tag_ABI_WMMX_args = [
   "AAPCS",
   "WMMX registers",
   "custom"
 ]
-class Tag_ABI_WMMX_args:
-  def index(str):
-    return _Tag_ABI_WMMX_args.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_optimization_goals = [
+Tag_ABI_optimization_goals = [
   "None",
   "Prefer Speed",
   "Aggressive Speed",
@@ -303,14 +153,7 @@ _Tag_ABI_optimization_goals = [
   "Prefer Debug",
   "Aggressive Debug"
 ]
-class Tag_ABI_optimization_goals:
-  def index(str):
-    return _Tag_ABI_optimization_goals.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_FP_optimization_goals = [
+Tag_ABI_FP_optimization_goals = [
   "None",
   "Prefer Speed",
   "Aggressive Speed",
@@ -319,190 +162,78 @@ _Tag_ABI_FP_optimization_goals = [
   "Prefer Accuracy",
   "Aggressive Accuracy"
 ]
-class Tag_ABI_FP_optimization_goals:
-  def index(str):
-    return _Tag_ABI_FP_optimization_goals.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_CPU_unaligned_access = [
+Tag_CPU_unaligned_access = [
  "None",
  "v6"
 ]
-class Tag_CPU_unaligned_access:
- def index(str):
-    return _Tag_CPU_unaligned_access.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_FP_HP_extension = [
+Tag_FP_HP_extension = [
   "Not Allowed",
   "Allowed"
 ]
-class Tag_FP_HP_extension:
-  def index(str):
-    return _Tag_FP_HP_extension.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_ABI_FP_16bit_format = [
+Tag_ABI_FP_16bit_format = [
   "None",
   "IEEE 754",
   "Alternative Format"
 ]
-class Tag_ABI_FP_16bit_format:
-  def index(str):
-    return _Tag_ABI_FP_16bit_format.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_DSP_extension = [
+Tag_DSP_extension = [
   "Follow architecture",
   "Allowed"
 ]
-class Tag_DSP_extension:
-  def index(str):
-    return _Tag_DSP_extension.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_MPextension_use = [
+Tag_MPextension_use = [
   "Not Allowed",
   "Allowed"
 ]
-class Tag_MPextension_use:
-  def index(str):
-    return _Tag_MPextension_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_DIV_use = [
+Tag_DIV_use = [
   "Allowed in Thumb-ISA",
   "v7-R or v7-M",
   "Not allowed",
   "Allowed in v7-A with integer division extension"
 ]
-class Tag_DIV_use:
-  def index(str):
-    return _Tag_DIV_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_T2EE_use = [
+Tag_T2EE_use = [
  "Not Allowed"
  "Allowed"
 ]
-class Tag_T2EE_use:
- def index(str):
-    return _Tag_T2EE_use.index(str)
-
- def criticality():
-  return 'none'
-
-_Tag_Virtualization_use = [
+Tag_Virtualization_use = [
   "Not Allowed",
   "TrustZone",
   "Virtualization Extensions",
   "TrustZone and Virtualization Extensions"
 ]
-class Tag_Virtualization_use:
-  def index(str):
-    return _Tag_Virtualization_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_MPextension_use_legacy = [
+Tag_MPextension_use_legacy = [
   "Not Allowed",
   "Allowed"
 ]
-class Tag_MPextension_use_legacy:
-  def index(str):
-    return _Tag_MPextension_use_legacy.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_MVE_arch = [
+Tag_MVE_arch = [
   "No MVE",
   "MVE Integer only",
   "MVE Integer and FP"
 ]
-class Tag_MVE_arch:
-  def index(str):
-    return _Tag_MVE_arch.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_PAC_extension = [
+Tag_PAC_extension = [
   "No PAC/AUT instructions",
   "PAC/AUT instructions permitted in the NOP space",
   "PAC/AUT instructions permitted in the NOP and in the non-NOP space"
 ]
-class Tag_PAC_extension:
-  def index(str):
-    return _Tag_PAC_extension.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_BTI_extension = [
+Tag_BTI_extension = [
   "BTI instructions not permitted",
   "BTI instructions permitted in the NOP space",
   "BTI instructions permitted in the NOP and in the non-NOP space"
 ]
-class Tag_BTI_extension:
-  def index(str):
-    return _Tag_BTI_extension.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_BTI_use = [
+Tag_BTI_use = [
   "Compiled without branch target enforcement",
   "Compiled with branch target enforcement"
 ]
-class Tag_BTI_use:
-  def index(str):
-    return _Tag_BTI_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_PACRET_use = [
+Tag_PACRET_use = [
   "Compiled without return address signing and authentication",
   "Compiled with return address signing and authentication"
 ]
-class Tag_PACRET_use:
-  def index(str):
-    return _Tag_PACRET_use.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_CPU_arch_profile = [
-  "None",
-  "Application",
-  "Realtime",
-  "Microcontroller",
-  "Application or Realtime"
-]
-class Tag_CPU_arch_profile:
-  def index(str):
-    return _Tag_CPU_arch_profile.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_align_needed = [
+Tag_CPU_arch_profile = {
+  "None": 0,
+  "Application": 0x41,
+  "Realtime": 0x52,
+  "Microcontroller": 0x4D,
+  "Application or Realtime": 0x53,
+}
+Tag_align_needed = [
   "None",
   "8-byte",
   "4-byte",
@@ -516,14 +247,7 @@ _Tag_align_needed = [
   "8-byte and up to 22-byte extended",
   "8-byte and up to 24-byte extended"
 ]
-class Tag_align_needed:
-  def index(str):
-    return _Tag_align_needed.index(str)
-
-  def criticality():
-    return 'none'
-
-_Tag_align_preserved = [
+Tag_align_preserved = [
   "None",
   "8-byte, except leaf SP",
   "8-byte",
@@ -537,15 +261,37 @@ _Tag_align_preserved = [
   "8-byte and up to 22-byte extended",
   "8-byte and up to 24-byte extended"
 ]
-class Tag_align_preserved:
-  def index(str):
-    return _Tag_align_preserved.index(str)
 
-  def criticality():
-    return 'none'
+Tag_align_needed = [
+  "None",
+  "8-byte",
+  "4-byte",
+  "8-byte and up to 8-byte extended",
+  "8-byte and up to 10-byte extended",
+  "8-byte and up to 12-byte extended",
+  "8-byte and up to 14-byte extended",
+  "8-byte and up to 16-byte extended",
+  "8-byte and up to 18-byte extended",
+  "8-byte and up to 20-byte extended",
+  "8-byte and up to 22-byte extended",
+  "8-byte and up to 24-byte extended",
+]
+Tag_align_preserved = [
+  "None",
+  "8-byte, except leaf SP",
+  "8-byte",
+  "8-byte and up to 8-byte extended",
+  "8-byte and up to 10-byte extended",
+  "8-byte and up to 12-byte extended",
+  "8-byte and up to 14-byte extended",
+  "8-byte and up to 16-byte extended",
+  "8-byte and up to 18-byte extended",
+  "8-byte and up to 20-byte extended",
+  "8-byte and up to 22-byte extended",
+  "8-byte and up to 24-byte extended",
+]
 
-
-Tags = {
+Tags_Config = {
     "Tag_File": (1, "uint32", None),
     "Tag_Section": (2, "uint32", None),
     "Tag_Symbol": (3, "uint32", None),
@@ -570,7 +316,7 @@ Tags = {
     "Tag_ABI_FP_user_exceptions": (22, "uleb128", Tag_ABI_FP_user_exceptions),
     "Tag_ABI_FP_number_model": (23, "uleb128", Tag_ABI_FP_number_model),
     "Tag_ABI_align_needed": (24, "uleb128", Tag_align_needed),
-    "Tag_ABI_align_preserved": (25, "uleb128", None),
+    "Tag_ABI_align_preserved": (25, "uleb128", Tag_align_preserved),
     "Tag_ABI_enum_size": (26, "uleb128", Tag_ABI_IntEnum_size),
     "Tag_ABI_HardFP_use": (27, "uleb128", Tag_ABI_HardFP_use),
     "Tag_ABI_VFP_args": (28, "uleb128", Tag_ABI_VFP_args),
@@ -592,12 +338,87 @@ Tags = {
     "Tag_conformance": (67, "NTBS", None),
     "Tag_T2EE_use": (66, "uleb128", Tag_T2EE_use),
     "Tag_Virtualization_use": (68, "uleb128", Tag_Virtualization_use),
-    "Tag_MPextension_use": (70, "uleb128", Tag_MPextension_use),
     "Tag_FramePointer_use": (72, "uleb128", None),
     "Tag_BTI_use": (74, "uleb128", None),
     "Tag_PACRET_use": (76, "uleb128", None),
 }
 
+class AttributeTypes:
+    TYPES = {"target-related": [4,5,6,7,8,9,10,11,12,48,36,34,66,68,42,44,46,50,52],
+             "procedure-call": [13,14,15,16,17,18,26,24,25,19,20,21,22,23,38,27,28,29,72,74],
+             "misc": [76],
+             "optimization": [30,31],
+             "compatibility": [32,65],
+             "conformance": [67],
+             "no-defaults": [64]
+             }
+
+    @staticmethod
+    def all():
+        return AttributeTypes.TYPES.keys()
+
+    @staticmethod
+    def is_attr_type(attr):
+        return attr in AttributeTypes.TYPES
+
+    @staticmethod
+    def get_attr_type(tag_index):
+        for key, val in AttributeTypes.TYPES.items():
+          if tag_index in val:
+              return key
+        return None
+
+
+DEFAULT = '<DEFAULT>'
+
+class TagInfo:
+    def __init__(self, name):
+        self.__name = name
+
+    def attr_type(self):
+        return AttributeTypes.get_attr_type(self.tag_index())
+
+    def datatype(self):
+        return Tags_Config[self.__name][1]
+
+    def is_string(self):
+        return Tags_Config[self.__name][1] == "NTBS"
+
+    def values(self):
+        vals = Tags_Config[self.__name][2]
+        if isinstance(vals, dict):
+          return vals.keys()
+        return vals
+
+    def get_default(self):
+        if Tags_Config[self.__name][1] == "NTBS":
+            return ""
+        assert Tags_Config[self.__name][2] is not None, "{}".format(self.__name)
+        vals = Tags_Config[self.__name][2]
+        if isinstance(vals, dict):
+          return vals.values[0]
+        return vals[0]
+
+    def index(self, val):
+        assert Tags_Config[self.__name][2] is not None, "{} {}".format(self.__name, val)
+        vals = Tags_Config[self.__name][2]
+        if val == DEFAULT:
+            val = vals[0]
+        if isinstance(vals, dict):
+          return vals[val]
+        return vals.index(val)
+
+    def tag_index(self):
+        return Tags_Config[self.__name][0]
+
+class Tags:
+    @staticmethod
+    def get_tags():
+        return Tags_Config.keys()
+
+    @staticmethod
+    def get_tag_info(name):
+        return TagInfo(name)
 
 
 #TODO

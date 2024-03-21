@@ -10,6 +10,7 @@
 Diagnostics = {
 "Tag_CPU_raw_name": """
 
+Target-related attribute.
 The raw name is the name a user gave to a tool or selected from a menu. It can
 be:
 
@@ -44,6 +45,7 @@ code.
 
 """,
    "Tag_CPU_arch": """
+Target-related attribute.
        0  Pre-v4
        1  Arm v4     // e.g. SA110
        2  Arm v4T    // e.g. Arm7TDMI
@@ -69,6 +71,7 @@ code.
       22  Arm v9-A
 """,
    "Tag_CPU_arch_profile": """
+Target-related attribute.
        0  Architecture profile is not applicable (e.g. pre v7, or cross-profile code),
           or is indicated by Tag_CPU_arch
       'A' (0x41) The application profile (e.g. for Cortex-A8)
@@ -93,10 +96,16 @@ architecture revision (``Tag_CPU_arch``) implies the permitted subset of
 instructions from the permitted ISA.
 """,
    "Tag_ARM_ISA_use": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user did not permit this entity to use Arm instructions
       1  The user intended that this entity could use Arm instructions
 """,
    "Tag_THUMB_ISA_use": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user did not permit this entity to use Thumb instructions
       1  (deprecated) The user permitted this entity to use 16-bit Thumb instructions (including BL)
       2  (deprecated) 32-bit Thumb instructions were permitted (implies 16-bit instructions permitted)
@@ -112,6 +121,9 @@ instructions from the permitted ISA.
       and 0 (or omitting the tag entirely) when use of Thumb was not intended.
 """,
    "Tag_FP_arch": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user did not permit this entity to use instructions requiring FP hardware
       1  The user permitted use of instructions from v1 of the floating point (FP) ISA
       2  Use of the v2 FP ISA was permitted (implies use of the v1 FP ISA)
@@ -123,11 +135,17 @@ instructions from the permitted ISA.
       8  Use of the Arm v8-A FP ISA was permitted, but only citing registers D0-D15, S0-S31
 """,
    "Tag_WMMX_arch": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user did not permit this entity to use WMMX
       1  The user permitted this entity to use WMMX v1
       2  The user permitted this entity to use WMMX v2
 """,
    "Tag_Advanced_SIMD_arch": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user did not permit this entity to use the Advanced SIMD Architecture (Neon)
       1  Use of the Advanced SIMDv1 Architecture (Neon) was permitted
       2  Use of Advanced SIMDv2 Architecture (Neon) (with half-precision floating-point and
@@ -136,12 +154,18 @@ instructions from the permitted ISA.
       4  Use of the Arm v8.1-A Advanced SIMD Architecture (Neon) was permitted
 """,
    "Tag_MVE_arch": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user did not permit this entity to use the M-profile Vector Extension
       1  Use of the Integer M-profile Vector Extension was permitted
       2  Use of the Integer and Floating Point M-profile Vector Extension was
       permitted
 """,
    "Tag_FP_HP_extension": """
+Target-related attribute.  Tracks the permitted use of instruction sets. The
+architecture revision (``Tag_CPU_arch``) implies the permitted subset of
+instructions from the permitted ISA.
       0  The user intended half-precision floating point instructions may be used if they
          exist in the available FP and ASIMD instruction sets as indicated by Tag_FP_arch
          and Tag_ASIMD_arch
@@ -154,11 +178,13 @@ instructions from the permitted ISA.
 
 """,
    "Tag_CPU_unaligned_access": """
+Target-related attribute. Describes the unaligned data accesses the user permitted the producer to make.
       0  The user did not intend this entity to make unaligned data accesses
       1  The user intended that this entity might make v6-style unaligned data accesses
 
 """,
    "Tag_T2EE_use": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  No use of T2EE extension was permitted, or no information is available
        1  Use of the T2EE extension was permitted
 
@@ -166,6 +192,7 @@ In effect, ``Tag_T2EE_use`` describes the intended use of ENTERX and LEAVEX
 instructions. ``Tag_T2EE_use`` is deprecated from r2.09.
 """,
    "Tag_Virtualization_use": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  No use of any virtualization extension was permitted, or no information available
        1  Use of the TrustZone extension was permitted
        2  Use of the virtualization extensions (HVC, ERET) were permitted
@@ -176,6 +203,7 @@ instruction in bit 0 of the tag value and the intended use of HVC and ERET
 instructions in bit 1.
 """,
    "Tag_MPextension_use": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  No use of Arm v7 MP extension was permitted, or no information available.
        1  Use of the Arm v7 MP extension was permitted.
 
@@ -183,6 +211,7 @@ In effect, ``Tag_MPextension_use`` describes the intended use of the PLDW
 (preload write hint) instruction.
 """,
    "Tag_DIV_use": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  The user intended divide instructions may be used if they exist, or no explicit
           information recorded. This code was permitted to use SDIV and UDIV if the
           instructions are guaranteed present in the architecture,
@@ -202,6 +231,7 @@ In effect, ``Tag_MPextension_use`` describes the intended use of the PLDW
    UDIV cannot be conveyed using values 0 and 1.
 """,
    "Tag_DSP_extension": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  The user intended DSP instructions may be used if they exist. This
           entity is permitted to use DSP instructions if they are guaranteed
           present in the architecuture as indicated by Tag_CPU_arch.
@@ -210,6 +240,7 @@ In effect, ``Tag_MPextension_use`` describes the intended use of the PLDW
           Tag_CPU_arch.
 """,
     "Tag_PAC_extension": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  The user did not permit this entity to use PAC/AUT instructions
        1  The user permitted this entity to use PAC/AUT instructions in the NOP
           space
@@ -218,12 +249,14 @@ In effect, ``Tag_MPextension_use`` describes the intended use of the PLDW
 
 """,
    "Tag_BTI_extension": """
+Target-related attribute. Describes the intended use of optional an architectural extension.
        0  The user did not permit this entity to use BTI instructions
        1  The user permitted this entity to use BTI instructions in the NOP space
        2  The user permitted this entity to use BTI instructions in the NOP and
           in the non-NOP space
 """,
    "Tag_PCS_config": """
+Procedure call-related attribute describing compatibility with the ABI.
        0  No standard configuration used, or no information recorded
        1  Bare platform configuration
        2  Linux application configuration
@@ -238,6 +271,9 @@ standard configuration used. Its value must be consistent with the values
 given to the tags below, and must not be used as a macro in place of them.
 """,
    "Tag_ABI_PCS_R9_use": """
+Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
+entity to address static data.
+
        0  R9 used as V6 (just another callee-saved register, implied by omitting the tag)
        1  R9 used as SB, a global Static Base register
        2  R9 used as a Thread Local Storage (TLS) pointer
@@ -256,35 +292,36 @@ The role played by that ``TPID*`` register is defined by the software platform�
 ABI.
 """,
    "Tag_ABI_PCS_RW_data": """
+Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
+entity to address static data.
+
        0  RW static data was permitted to be addressed absolutely
        1  RW static data was only permitted to be addressed PC-relative
        2  RW static data was only permitted to be addressed SB-relative
        3  The user did not permit this entity to use RW static data
 """,
    "Tag_ABI_PCS_RO_data": """
+Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
+entity to address static data.
        0  RO static data was permitted to be addressed absolutely
        1  RO static data was only permitted to be addressed PC-relative
        2  The user did not permit this entity to use RO static data
 """,
    "Tag_ABI_PCS_GOT_use": """
+Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
+entity to address static data.
        0  The user did not permit this entity to import static data
        1  The user permitted this entity to address imported data directly
        2  The user permitted this entity to address imported data indirectly (e.g. via a GOT)
-
-Compatibility among shared objects and their clients is affected by whether
-imported data are addressed directly or indirectly. Linux imported data must
-be addressed indirectly (via the Global Object Table, or GOT). Symbian OS
-(2004) imported data must be addressed directly.
-
-The following two tags describe the permitted sizes of a wide character and
-an enumerated data item.
 """,
    "Tag_ABI_PCS_wchar_t": """
+Describes the permitted sizes of a wide character.
        0  The user prohibited the use of wchar_t when building this entity
        2  The user intended the size of wchar_t to be 2
        4  The user intended the size of wchar_t to be 4
 """,
    "Tag_ABI_enum_size": """
+Describes the permitted sizes of an enumerated data item.
        0  The user prohibited the use of enums when building this entity
        1  Enum values occupy the smallest container big enough to hold all their values
        2  The user intended Enum containers to be 32-bit
@@ -292,6 +329,7 @@ an enumerated data item.
           contains a value needing 32 bits to encode it; other enums can be containerized
 """,
    "Tag_ABI_align_needed": """
+Summarizes the alignment contract across an interface.
        0  The user did not permit code to depend the alignment of 8-byte data or data with
           extended (> 8-byte) alignment
        1  Code was permitted to depend on the 8-byte alignment of 8-byte data items
@@ -301,6 +339,7 @@ an enumerated data item.
           and the alignment of data items having up to 2n-byte extended alignment
 """,
    "Tag_ABI_align_preserved": """
+Summarizes the alignment contract across an interface.
        0  The user did not require code to preserve 8-byte alignment of 8-byte data objects
        1  Code was required to preserve 8-byte alignment of 8-byte data objects
        2  Code was required to preserve 8-byte alignment of 8-byte data objects and to
@@ -310,24 +349,29 @@ an enumerated data item.
          of data items having up to 2n-byte extended alignment.
 """,
    "Tag_ABI_FP_rounding": """
+Summarizes the requirements code associated with this attributed entity was permitted to place on floating-point arithmetic.
        0  The user intended this code to use the IEEE 754 round to nearest rounding mode
        1  The user permitted this code to choose the IEEE 754 rounding mode at run time
 """,
    "Tag_ABI_FP_denormal": """
+Summarizes the requirements code associated with this attributed entity was permitted to place on floating-point arithmetic.
        0  The user built this code knowing that denormal numbers might be flushed to (+) zero
        1  The user permitted this code to depend on IEEE 754 denormal numbers
        2  The user permitted this code to depend on the sign of a flushed-to-zero number being
           preserved in the sign of 0
 """,
    "Tag_ABI_FP_exceptions": """
+Summarizes the requirements code associated with this attributed entity was permitted to place on floating-point arithmetic.
        0  The user intended that this code should not check for inexact results
        1  The user permitted this code to check the IEEE 754 inexact exception
 """,
    "Tag_ABI_FP_user_exceptions": """
+Summarizes the requirements code associated with this attributed entity was permitted to place on floating-point arithmetic.
        0  The user intended that this code should not enable or use IEEE user exceptions
        1  The user permitted this code to enables and use IEEE 754 user exceptions
 """,
    "Tag_ABI_FP_number_model": """
+Summarizes the requirements code associated with this attributed entity was permitted to place on floating-point arithmetic.
        0  The user intended that this code should not use floating point numbers
        1  The user permitted this code to use IEEE 754 format normal numbers only
        2  The user permitted numbers, infinities, and one quiet NaN (see [RTABI32_])
@@ -345,6 +389,7 @@ below).
 
 """,
    "Tag_ABI_FP_16bit_format": """
+Summarizes use of 16-bit floating point numbers by the attributed entities.
        0  The user intended that this entity should not use 16-bit floating point numbers
        1  Use of IEEE 754 (draft, November 2006) format 16-bit FP numbers was permitted
        2  Use of VFPv3/Advanced SIMD “alternative format” 16-bit FP numbers was permitted
@@ -352,6 +397,18 @@ below).
 Options 1 and 2 are mutually incompatible.
 """,
    "Tag_ABI_HardFP_use": """
+Records th epermitted use of the VFP extension and WMMX co-processor.
+Note that:
+
+*  Under the base variant of the procedure call standard [AAPCS32_], FP
+   parameters and results are passed the soft FP way, in core registers or on
+   the stack. WMMX parameters and results are passed the same way.
+
+*  The VFP variant of [AAPCS32_] uses VFP registers D0-D7
+   (s0-s15) to pass parameters and results.
+
+*  The Intel WMMX convention is to use wR0-wR9 to pass parameters and
+   results.
        0  The user intended that FP use should be implied by Tag_FP_arch
        1  The user intended this code to execute on the single-precision variant
           derived from Tag_FP_arch
@@ -360,6 +417,19 @@ Options 1 and 2 are mutually incompatible.
           (Note: This is a deprecated duplicate of the default encoded by 0)
 """,
    "Tag_ABI_VFP_args": """
+Records th epermitted use of the VFP extension.
+Note that:
+
+*  Under the base variant of the procedure call standard [AAPCS32_], FP
+   parameters and results are passed the soft FP way, in core registers or on
+   the stack. WMMX parameters and results are passed the same way.
+
+*  The VFP variant of [AAPCS32_] uses VFP registers D0-D7
+   (s0-s15) to pass parameters and results.
+
+*  The Intel WMMX convention is to use wR0-wR9 to pass parameters and
+   results.
+
        0  The user intended FP parameter/result passing to conform to AAPCS, base variant
        1  The user intended FP parameter/result passing to conform to AAPCS, VFP variant
        2  The user intended FP parameter/result passing to conform to toolchain-specific
@@ -368,12 +438,25 @@ Options 1 and 2 are mutually incompatible.
           non-variadic functions to pass FP parameters/results
 """,
    "Tag_ABI_WMMX_args": """
+Records th epermitted use of WMMX co-processor.
+Note that:
+
+*  Under the base variant of the procedure call standard [AAPCS32_], FP
+   parameters and results are passed the soft FP way, in core registers or on
+   the stack. WMMX parameters and results are passed the same way.
+
+*  The VFP variant of [AAPCS32_] uses VFP registers D0-D7
+   (s0-s15) to pass parameters and results.
+
+*  The Intel WMMX convention is to use wR0-wR9 to pass parameters and
+   results.
        0  The user intended WMMX parameter/result passing conform to the AAPCS, base variant
        1  The user intended WMMX parameter/result passing conform to Intel’s WMMX conventions
        2  The user intended WMMX parameter/result passing conforms to toolchain-specific
           conventions
 """,
    "Tag_FramePointer_use": """
+Summarizes the level of conformance to the rules for creating and maintaining a chain of frame records on the stack.
        0  This code makes no claims to conformance with the rules for use of a frame pointer
        1  This code creates a frame record for all functions that may modify the value stored
           in the link register (LR)
@@ -390,14 +473,18 @@ on being able to walk the frame chain.
 
 """,
    "Tag_BTI_use": """
+Describes a producer use of branch target identification instructions.
        0  This code is compiled without branch target enforcement
        1  This code is compiled with branch target enforcement
 """,
    "Tag_PACRET_use": """
+Describes a producer use of pointer authentication instructions.
        0  This code is compiled without return address signing and authentication
        1  This code is compiled with return address signing and authentication
 """,
    "Tag_ABI_optimization_goals": """
+ABI-related tag recording optimization goals. It is not required for reasoning about incompatibility,
+but assist with selecting appropriate variants of library members.
        0  No particular optimization goals, or no information recorded
        1  Optimized for speed, but small size and good debug illusion preserved
        2  Optimized aggressively for speed, small size and debug illusion sacrificed
@@ -422,6 +509,7 @@ user is willing to sacrifice all other considerations to achieving that
 goal.
 """,
    "Tag_ABI_FP_optimization_goals": """
+ABI-related tag recording optimization goals. It is not required for reasoning about incompatibility, but assist with selecting appropriate variants of library members.
        0  No particular FP optimization goals, or no information recorded
        1  Optimized for speed, but small size and good accuracy preserved
        2  Optimized aggressively for speed, small size and accuracy sacrificed
@@ -496,7 +584,7 @@ All other uses are RESERVED to the ABI.  Future releases of the ABI may relax
 this constraint.
 """,
    "Tag_conformance": """
-
+Describes the version of the ABI to which conformity is claimed by an entity.
 This version of the ABI is “\ |release|\ ”. The minor version (dot-xy) is
 for information and does not affect the claim. Version “0” denotes no claim
 to conform and is the default if the tag is omitted.
