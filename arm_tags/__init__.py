@@ -412,7 +412,7 @@ class AttributeInfo:
 
 class Attributes:
     @staticmethod
-    def get_all():
+    def all():
         return Tags_Config.keys()
 
     @staticmethod

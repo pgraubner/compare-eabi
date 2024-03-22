@@ -73,7 +73,7 @@ class ObjFilelist:
                 objs.append(o)
 
         attrs = {}
-        for tag in Attributes.get_all():
+        for tag in Attributes.all():
             attrs[tag] = {}
             for obj in objs:
                 val = DEFAULT
@@ -197,7 +197,7 @@ class ArchiveFile:
 
     def collect(self):
         attrs = {}
-        for tag in Attributes.get_all():
+        for tag in Attributes.all():
             val = None
             for obj in self.__objfiles.objfiles():
                 if tag in obj.attrs():
@@ -252,7 +252,10 @@ class ObjFile:
 
     def filter_by_attr_type(self, attr_type):
         result = {}
-        for attr, val in self.__attrs.items():
+        for attr in Attributes.all():
+            if attr not in self.__attrs:
+                continue
+            val = self.__attrs[attr]
             info = Attributes.get_attr_info(attr)
             if info.attr_type() == attr_type:
                 result[attr] = val
@@ -338,7 +341,7 @@ def details(objfiles):
         print(o)
 
 def explain(tag):
-    if tag not in Attributes.get_all():
+    if tag not in Attributes.all():
         print("Error: {} not a valid tag".format(tag))
         sys.exit(1)
     if tag not in Diagnostics:
@@ -354,15 +357,15 @@ filter = AttributeTypes.all()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-                        prog='eabi-helper',
-                        description='helps interpreting objects file in ARM32 ABI')
-    parser.add_argument('--filter', nargs='+')
-    parser.add_argument('--textfiles', nargs='+')
-    parser.add_argument('--objfiles', nargs='+')
-    parser.add_argument('--verbose', action='store_true')
-    parser.add_argument('--diff', action='store_true')
-    parser.add_argument('--readelf', nargs=1)
-    parser.add_argument('--explain', action='store', type=str)
+                        prog='compare-eabi',
+                        description='compare-eabi helps interpreting ARM Attributes in objects file for the ARM32 ABI')
+    parser.add_argument('--readelf', nargs=1, help="path to a ARM compliant readelf binutils tool")
+    parser.add_argument('--textfiles', nargs='+', help="parse text files previously created with 'readelf -A <objfile>'")
+    parser.add_argument('--objfiles', nargs='+', help="parse object files and archives by calling 'readelf -A <objfile>'")
+    parser.add_argument('--filter', nargs='+', help="filters for attribute types. valid types are \"{}\"".format("\", \"".join(AttributeTypes.all())))
+    parser.add_argument('--diff', action='store_true', help="compare ARM attributes for all listed text files, object files, and archives")
+    parser.add_argument('--verbose', action='store_true', help="shows an explanation for each listed ARM attribute")
+    parser.add_argument('--explain', action='store', type=str, help="shows an explanation for a particular ARM attribute")
 
     args = parser.parse_args()
 

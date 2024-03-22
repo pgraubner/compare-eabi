@@ -32,20 +32,12 @@ tag.
    "Tag_CPU_name": """
 A CPU name is defined by Arm or the architecture licensee responsible for
 designing the part. It is the official product name, with no extension and
-no abbreviation.
-
-An Arm-defined architecture name may be used instead of a CPU name, and
-denotes that the user had more generic intentions. Arm-defined names of CPUs
-and architectures recognized by Arm Compiler 5.01 are listed in
-`Arm CPU names recognized by Arm Compiler 5.01 (armcc)`_.
-
-The following tags describe the processor architecture version and
-architecture profile for which the user intended the producer to produce
-code.
-
+no abbreviation. An Arm-defined architecture name may be used instead of a CPU name, and
+denotes that the user had more generic intentions.
 """,
    "Tag_CPU_arch": """
-Target-related attribute.
+Target-related attribute. Describes the processor architecture version for which
+the user intended the producer to produce code.
        0  Pre-v4
        1  Arm v4     // e.g. SA110
        2  Arm v4T    // e.g. Arm7TDMI
@@ -71,7 +63,9 @@ Target-related attribute.
       22  Arm v9-A
 """,
    "Tag_CPU_arch_profile": """
-Target-related attribute.
+Target-related attribute. Describes the processor architecture profile
+for which the user intended the producer to produce code.
+
        0  Architecture profile is not applicable (e.g. pre v7, or cross-profile code),
           or is indicated by Tag_CPU_arch
       'A' (0x41) The application profile (e.g. for Cortex-A8)
