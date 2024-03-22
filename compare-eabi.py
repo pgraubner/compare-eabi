@@ -371,6 +371,7 @@ if __name__ == '__main__':
 
     if args.explain is not None:
         explain(args.explain)
+        sys.exit(0)
     if args.readelf is not None:
         readelf = args.readelf[0]
 
