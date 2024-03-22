@@ -1,5 +1,5 @@
 # compare-eabi
-compare-eabi helps interpreting ARM Attributes in objects file for the ARM32 ABI.
+compare-eabi helps comparing and interpreting ARM32 ABI Attributes from objects files.
 
 ## Compatibility check between toolchains
 
