@@ -8,7 +8,7 @@ import os
 import argparse
 
 from arm_eabi_diagnostics import Diagnostics
-from arm_tags import Tags, AttributeTypes, DEFAULT
+from arm_tags import Attributes, AttributeTypes, DEFAULT
 
 class Colors:
     """"""
@@ -67,13 +67,13 @@ class ObjFilelist:
         objs = []
         for o in self.__objfiles:
             if o.is_archive():
-                objs.append(o.restrictions())
+                objs.append(o.collect())
                 #objs += o.objfiles()
             else:
                 objs.append(o)
 
         attrs = {}
-        for tag in Tags.get_tags():
+        for tag in Attributes.get_all():
             attrs[tag] = {}
             for obj in objs:
                 val = DEFAULT
@@ -95,7 +95,7 @@ def write_tag_verbose(result, tag, val):
     result.write("\n")
 
 def write_tag(result, tag, val):
-    tag_info = Tags.get_tag_info(tag)
+    tag_info = Attributes.get_attr_info(tag)
     fmt = "| {:<30} | {:<50} | {:>5} | {:<7} |"
     if tag_info.is_string():
         if val == DEFAULT:
@@ -112,9 +112,17 @@ def write_tag(result, tag, val):
 
     result.write("\n")
 
+def write_attr_type_header(result, attr_type):
+    header = "{} attribute types".format(attr_type)
+    result.write(Colors.HEADER)
+    result.write(header)
+    result.write("\n" + "-" * len(header))
+    result.write("\n")
+    result.write(Colors.ENDC)
 
 class Diff:
-    DIFF_PROPERTIES = {'identical': {'header': 'Identical tags\n', 'color': Colors.OKGREEN},
+    DIFF_PROPERTIES = {
+                	#'identical': {'header': 'Identical tags\n', 'color': Colors.OKGREEN},
                     #'identical-or-default': {'header': 'Identical tags with default values\n', 'color': Colors.WARNING},
                     'non-identical': {'header': 'Tags with non-identical values (possibly conflicting)\n', 'color': Colors.FAIL}
                     }
@@ -132,39 +140,43 @@ class Diff:
             if all_equal(val.values()):
                 if all_default(val.values()):
                     continue
-                self.__properties['identical'].append(attr)
+                #self.__properties['identical'].append(attr)
             elif all_equal_or_default(val.values()):
                 #self.__properties['identical-or-default'].append(attr)
                 self.__properties['non-identical'].append(attr)
             else:
                 self.__properties['non-identical'].append(attr)
 
-    def property(self, prop):
-        return self.__properties[prop]
 
     def __repr__(self) -> str:
         result = io.StringIO()
 
         def write_property(key):
-            property = Diff.DIFF_PROPERTIES[key]
-            result.write(Colors.HEADER)
-            result.write(property['header'])
-            result.write("-" * len(property['header']))
+            prop = Diff.DIFF_PROPERTIES[key]
+            result.write(Colors.BOLD)
+            result.write(prop['header'])
+            result.write("-" * len(prop['header']))
             result.write("\n")
             result.write(Colors.ENDC)
 
-            for tag in self.property(key):
-                result.write(property['color'])
-                attr_dict = self.__attrs[tag]
+            for attr_type in AttributeTypes.all():
+                write_attr_type_header(result, attr_type)
 
-                for fn, val in attr_dict.items():
-                    result.write("| {:<15} ".format( os.path.basename(fn)) )
-                    write_tag(result, tag, val)
+                for tag in self.__properties[key]:
+                    info = Attributes.get_attr_info(tag)
+                    if info.attr_type() != attr_type:
+                        continue
+                    result.write(prop['color'])
+                    attr_dict = self.__attrs[tag]
 
-                result.write(Colors.ENDC)
-                if verbose:
-                    result.write(Diagnostics[tag])
-                result.write("\n")
+                    for fn, val in attr_dict.items():
+                        result.write("| {:<15} ".format( os.path.basename(fn)) )
+                        write_tag(result, tag, val)
+
+                    result.write(Colors.ENDC)
+                    if verbose:
+                        result.write(Diagnostics[tag])
+                    result.write("\n")
 
         for p in Diff.DIFF_PROPERTIES:
             write_property(p)
@@ -183,9 +195,9 @@ class ArchiveFile:
     def objfiles(self):
         return self.__objfiles.objfiles()
 
-    def restrictions(self):
+    def collect(self):
         attrs = {}
-        for tag in Tags.get_tags():
+        for tag in Attributes.get_all():
             val = None
             for obj in self.__objfiles.objfiles():
                 if tag in obj.attrs():
@@ -202,7 +214,6 @@ class ArchiveFile:
 
     @staticmethod
     def from_file(filename):
-        global readelf
         out = subprocess.run([readelf, "-A", filename], stdout=subprocess.PIPE)
         buf = io.StringIO(out.stdout.decode('utf-8'))
 
@@ -238,6 +249,14 @@ class ObjFile:
 
     def attrs(self):
         return self.__attrs
+
+    def filter_by_attr_type(self, attr_type):
+        result = {}
+        for attr, val in self.__attrs.items():
+            info = Attributes.get_attr_info(attr)
+            if info.attr_type() == attr_type:
+                result[attr] = val
+        return result
 
     @staticmethod
     def from_objfile(filename):
@@ -276,7 +295,7 @@ class ObjFile:
                 key = key.strip()
 
                 # add attribute
-                info = Tags.get_tag_info(key)
+                info = Attributes.get_attr_info(key)
                 if info.attr_type() in filter:
                     attrs[key] = value
 
@@ -285,16 +304,25 @@ class ObjFile:
 
     def __repr__(self) -> str:
         result = io.StringIO()
+
         result.write(Colors.BOLD)
         result.write(self.filename())
         result.write(Colors.ENDC)
         result.write("\n")
 
-        for attr, val in self.__attrs.items():
-            if verbose:
-                write_tag_verbose(result, attr, val)
-            else:
-                write_tag(result, attr, val)
+        for attr_type in AttributeTypes.all():
+            items = self.filter_by_attr_type(attr_type).items()
+            if len(items) == 0:
+                continue
+
+            write_attr_type_header(result, attr_type)
+
+            for attr, val in items:
+                if verbose:
+                    write_tag_verbose(result, attr, val)
+                else:
+                    write_tag(result, attr, val)
+            result.write("\n")
 
         return result.getvalue()
 
@@ -310,7 +338,7 @@ def details(objfiles):
         print(o)
 
 def explain(tag):
-    if tag not in Tags.get_tags():
+    if tag not in Attributes.get_all():
         print("Error: {} not a valid tag".format(tag))
         sys.exit(1)
     if tag not in Diagnostics:

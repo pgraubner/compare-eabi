@@ -350,8 +350,7 @@ class AttributeTypes:
              "optimization": [30,31],
              "compatibility": [32,65],
              "conformance": [67],
-             "no-defaults": [64]
-             }
+             "no-defaults": [64]}
 
     @staticmethod
     def all():
@@ -364,14 +363,14 @@ class AttributeTypes:
     @staticmethod
     def get_attr_type(tag_index):
         for key, val in AttributeTypes.TYPES.items():
-          if tag_index in val:
-              return key
+            if tag_index in val:
+                return key
         return None
 
 
 DEFAULT = '<DEFAULT>'
 
-class TagInfo:
+class AttributeInfo:
     def __init__(self, name):
         self.__name = name
 
@@ -387,16 +386,16 @@ class TagInfo:
     def values(self):
         vals = Tags_Config[self.__name][2]
         if isinstance(vals, dict):
-          return vals.keys()
+            return vals.keys()
         return vals
 
     def get_default(self):
-        if Tags_Config[self.__name][1] == "NTBS":
-            return ""
+        if self.is_string():
+            return '""'
         assert Tags_Config[self.__name][2] is not None, "{}".format(self.__name)
         vals = Tags_Config[self.__name][2]
         if isinstance(vals, dict):
-          return vals.values[0]
+            return vals.values[0]
         return vals[0]
 
     def index(self, val):
@@ -405,24 +404,23 @@ class TagInfo:
         if val == DEFAULT:
             val = vals[0]
         if isinstance(vals, dict):
-          return vals[val]
+            return vals[val]
         return vals.index(val)
 
     def tag_index(self):
         return Tags_Config[self.__name][0]
 
-class Tags:
+class Attributes:
     @staticmethod
-    def get_tags():
+    def get_all():
         return Tags_Config.keys()
 
     @staticmethod
-    def get_tag_info(name):
-        return TagInfo(name)
+    def get_attr_info(name):
+        return AttributeInfo(name)
 
 
-#TODO
-#Tag_ABI_conformance
-#Tag_nodefaults
-#Tag_compatibility
-#Tag_also_compatible_with
+# TODO
+# "Tag_FramePointer_use": (72, "uleb128", None),
+# "Tag_BTI_use": (74, "uleb128", None),
+# "Tag_PACRET_use": (76, "uleb128", None),

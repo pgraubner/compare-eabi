@@ -596,7 +596,33 @@ section.
 
 In this case, the dot-ARM-dot-attributes section would begin
 “A~~~~aeabi\0\1~~~~C\ |release|\ ”, where ‘~’ denotes an unknown byte value.
-""",
+
+History of attributes in ABI revisions and ABI-Addenda document versions:
+   +--------------+---------+--------------------+
+   | ABI Revision | Doc vsn | Date               |
+   +==============+=========+====================+
+   | r2.0         | v1.0    | March 2005         |
+   +--------------+---------+--------------------+
+   | r2.01        | v1.01   | 5th July 2005      |
+   +--------------+---------+--------------------+
+   | r2.02        | v1.03   | 13th October 2005  |
+   +--------------+---------+--------------------+
+   | r2.03        | v1.04   | 6th January 2006   |
+   +--------------+---------+--------------------+
+   | r2.04        | v1.05   | 8th May 2006       |
+   +--------------+---------+--------------------+
+   | r2.05        | v1.06   | 25th January 2007  |
+   +--------------+---------+--------------------+
+   | r2.06        | A       | October 2007       |
+   +--------------+---------+--------------------+
+   | r2.07        | B       | October 2008       |
+   +--------------+---------+--------------------+
+   | r2.08        | C       | October 2009       |
+   +--------------+---------+--------------------+
+   | r2.09        | D       | November 2012      |
+   +--------------+---------+--------------------+
+"""
+,
    "Tag_nodefaults": """
 
 A consuming tool may take IMPLEMENTATION DEFINED action if any tag has an
