@@ -170,7 +170,7 @@ class Diff:
                     attr_dict = self.__attrs[tag]
 
                     for fn, val in attr_dict.items():
-                        result.write("| {:<15} ".format( os.path.basename(fn)) )
+                        result.write("| {:<20} ".format( os.path.basename(fn)) )
                         write_tag(result, tag, val)
 
                     result.write(Colors.ENDC)
