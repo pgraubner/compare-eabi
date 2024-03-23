@@ -59,28 +59,34 @@ class ArchiveFile:
         self.__fn = fn
         self.__objfiles = ObjFileList()
 
+    def __iter__(self):
+        return self.__objfiles.objfiles().__iter__()
+
+    def __next__(self):
+        return self.__objfiles.objfiles().__next__()
+
     def is_archive(self):
         return True
 
     def objfiles(self):
         return self.__objfiles.objfiles()
 
-    def collect(self):
-        attrs = {}
-        for tag in Attributes.all():
-            val = None
-            for obj in self.__objfiles.objfiles():
-                if tag in obj.attrs():
-                    if val is None:
-                        val = obj.attrs()[tag]
-                    else:
-                        assert val == obj.attrs()[tag]
-                    break
-            if val is not None:
-                attrs[tag] = val
+    # def collect(self):
+    #     attrs = {}
+    #     for tag in Attributes.all():
+    #         val = None
+    #         for obj in self.__objfiles.objfiles():
+    #             if tag in obj.attrs():
+    #                 if val is None:
+    #                     val = obj.attrs()[tag]
+    #                 else:
+    #                     assert val == obj.attrs()[tag]
+    #                 break
+    #         if val is not None:
+    #             attrs[tag] = val
 
-        result = ObjFile(self.__fn, attrs)
-        return result
+    #     result = ObjFile(self.__fn, attrs)
+    #     return result
 
     @staticmethod
     def from_buf(filename, buf):
