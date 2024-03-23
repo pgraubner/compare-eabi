@@ -14,6 +14,12 @@ class ObjFileList:
     def __next__(self):
         return self.__objfiles.__next__()
 
+    def filter_by_attr_type(self, *attr_type):
+        result = []
+        for o in self.__objfiles:
+            result.append(o.filter_by_attr_type(*attr_type))
+        return ObjFileList.from_array(result)
+
     @staticmethod
     def from_array(arr):
         result = ObjFileList()
@@ -111,16 +117,16 @@ class ObjFile:
     def attrs(self):
         return self.__attrs
 
-    def filter_by_attr_type(self, attr_type):
+    def filter_by_attr_type(self, *attr_type):
         result = {}
         for attr in Attributes.all():
             if attr not in self.__attrs:
                 continue
             val = self.__attrs[attr]
             info = Attributes.get_attr_info(attr)
-            if info.attr_type() == attr_type:
+            if info.attr_type() in attr_type:
                 result[attr] = val
-        return result
+        return ObjFile(self.__fn, result)
 
     @staticmethod
     def from_buf(filename, buf):

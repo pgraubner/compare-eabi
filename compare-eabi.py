@@ -32,13 +32,13 @@ def print_objfile(objfile) -> str:
     result.write("\n")
 
     for attr_type in AttributeTypes.all():
-        items = objfile.filter_by_attr_type(attr_type).items()
-        if len(items) == 0:
+        filtered_objfile = objfile.filter_by_attr_type(attr_type).attrs()
+        if len(filtered_objfile) == 0:
             continue
 
         write_attr_type_header(result, attr_type)
 
-        for attr, val in items:
+        for attr, val in filtered_objfile.items():
             if VERBOSE:
                 write_tag_verbose(result, attr, val)
             else:
@@ -123,25 +123,6 @@ def write_attr_type_header(result, attr_type):
     result.write(Colors.ENDC)
 
 
-def diff(objfiles):
-    objs = ObjFileList.from_array(objfiles)
-    print(print_diff(objs.compare()))
-
-
-def details(objfiles):
-    for o in objfiles:
-        print(print_objfile(o))
-
-def explain(tag):
-    if tag not in Attributes.all():
-        print("Error: {} not a valid tag".format(tag))
-        sys.exit(1)
-    if tag not in Diagnostics:
-        print("Error: {} has no diagnostics information".format(tag))
-        sys.exit(1)
-    print(Colors.BOLD, tag, Colors.ENDC)
-    print(Diagnostics[tag])
-
 def read_objfile(filename):
     out = subprocess.run([READELF, "-A", filename], stdout=subprocess.PIPE)
     buf = io.StringIO(out.stdout.decode('utf-8'))
@@ -156,6 +137,25 @@ def read_archive(filename):
     out = subprocess.run([READELF, "-A", filename], stdout=subprocess.PIPE)
     buf = io.StringIO(out.stdout.decode('utf-8'))
     return ArchiveFile.from_buf(filename, buf)
+
+def diff(objfiles):
+    objs = ObjFileList.from_array(objfiles).filter_by_attr_type(*FILTER)
+    print(print_diff(objs.compare()))
+
+
+def details(objfiles):
+    for o in objfiles:
+        print(print_objfile(o.filter_by_attr_type(*FILTER)))
+
+def explain(tag):
+    if tag not in Attributes.all():
+        print("Error: {} not a valid tag".format(tag))
+        sys.exit(1)
+    if tag not in Diagnostics:
+        print("Error: {} has no diagnostics information".format(tag))
+        sys.exit(1)
+    print(Colors.BOLD, tag, Colors.ENDC)
+    print(Diagnostics[tag])
 
 READELF = "readelf"
 VERBOSE = False
