@@ -94,6 +94,8 @@ class ArchiveFile:
             if line == "":
                 break
             _, fn = line.split(":")
+            # extract file name form "<archive>(<file name>)"
+            fn = fn.strip().split("(")[1][:-1]
             arr.append(ObjFile.from_buf(fn, buf))
 
         result.__objfiles = ObjFileList.from_array(arr)
