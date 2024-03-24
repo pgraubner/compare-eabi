@@ -1,5 +1,5 @@
 
-from arm_tags.attributes import DEFAULT, Attributes
+from arm_tags.attributes import DEFAULT, ArmAttributes
 
 class ObjFileList:
     """
@@ -40,7 +40,7 @@ class ObjFileList:
                 objs.append(o)
 
         attrs = {}
-        for tag in Attributes.all():
+        for tag in ArmAttributes.all():
             attrs[tag] = {}
             for obj in objs:
                 val = DEFAULT
@@ -127,11 +127,11 @@ class ObjFile:
 
     def filter_by_attr_type(self, *attr_type):
         result = {}
-        for attr in Attributes.all():
+        for attr in ArmAttributes.all():
             if attr not in self.__attrs:
                 continue
             val = self.__attrs[attr]
-            info = Attributes.get_attr_info(attr)
+            info = ArmAttributes.get_attr_info(attr)
             if info.attr_type() in attr_type:
                 result[attr] = val
         return ObjFile(self.__fn, result)

@@ -7,8 +7,8 @@ import os
 import argparse
 import subprocess
 
-from arm_eabi_diagnostics import Diagnostics
-from arm_tags.attributes import Attributes, AttributeTypes, DEFAULT
+from arm_eabi_diagnostics import ArmAttributesDiagnostics
+from arm_tags.attributes import ArmAttributes, AttributeTypes, DEFAULT
 from arm_tags.objfiles import ArchiveFile, Diff, ObjFileList, ObjFile
 
 class Colors:
@@ -68,7 +68,7 @@ def print_diff(diff) -> str:
             write_attr_type_header(result, attr_type)
 
             for tag in diff.properties(key):
-                info = Attributes.get_attr_info(tag)
+                info = ArmAttributes.get_attr_info(tag)
                 if info.attr_type() != attr_type:
                     continue
                 result.write(prop['color'])
@@ -80,7 +80,7 @@ def print_diff(diff) -> str:
 
                 result.write(Colors.ENDC)
                 if VERBOSE:
-                    result.write(Diagnostics[tag])
+                    result.write(ArmAttributesDiagnostics.diagnostics(tag))
                 result.write("\n")
 
     for p in Diff.DIFF_PROPERTIES:
@@ -93,11 +93,11 @@ def write_tag_verbose(result, tag, val):
     result.write(Colors.HEADER)
     write_tag(result, tag, val)
     result.write(Colors.ENDC)
-    result.write(Diagnostics[tag])
+    result.write(ArmAttributesDiagnostics.diagnostics(tag))
     result.write("\n")
 
 def write_tag(result, tag, val):
-    tag_info = Attributes.get_attr_info(tag)
+    tag_info = ArmAttributes.get_attr_info(tag)
     fmt = "| {:<30} | {:<50} | {:>5} | {:<7} |"
     if tag_info.is_string():
         if val == DEFAULT:
@@ -148,14 +148,14 @@ def details(objfiles):
         print(print_objfile(o.filter_by_attr_type(*FILTER)))
 
 def explain(tag):
-    if tag not in Attributes.all():
-        print("Error: {} not a valid tag".format(tag))
+    if not ArmAttributes.is_valid(tag):
+        print("Error: {} not a valid Arm Attribute".format(tag))
         sys.exit(1)
-    if tag not in Diagnostics:
+    if not ArmAttributesDiagnostics.has_diagnostics(tag):
         print("Error: {} has no diagnostics information".format(tag))
         sys.exit(1)
     print(Colors.BOLD, tag, Colors.ENDC)
-    print(Diagnostics[tag])
+    print(ArmAttributesDiagnostics.diagnostics(tag))
 
 READELF = "readelf"
 VERBOSE = False

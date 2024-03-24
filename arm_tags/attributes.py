@@ -67,7 +67,11 @@ class AttributeInfo:
     def tag_index(self):
         return Tags_Config[self.__name][0]
 
-class Attributes:
+class ArmAttributes:
+    @staticmethod
+    def is_valid(tag):
+        return tag in Tags_Config
+
     @staticmethod
     def all():
         return Tags_Config.keys()

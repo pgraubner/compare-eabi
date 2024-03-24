@@ -1,5 +1,14 @@
 #!/usr/bin/python3
 
+class ArmAttributesDiagnostics:
+    @staticmethod
+    def has_diagnostics(tag):
+        return tag in Diagnostics
+
+    @staticmethod
+    def diagnostics(tag):
+        return Diagnostics[tag]
+
 # The following information was taken and modified from https://github.com/ARM-software/abi-aa/blob/fe46d4335d87e792991ceab9c8fd7b79f927a918/addenda32/addenda32.rst#L1006
 # licensed under CC-BY-SA-4.0 along with an additional patent license.
 # Release: https://github.com/ARM-software/abi-aa/releases/tag/2023Q3
