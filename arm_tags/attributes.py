@@ -111,9 +111,10 @@ class NumericAttributeInfo(AttributeInfo):
         return vals[0]
 
     def index(self, val):
+        assert Tags_Config[self._name][2] is not None, "{}".format(self._name)
         vals = Tags_Config[self._name][2]
         if val == DEFAULT:
-            val = vals[0]
+            return 0
         if isinstance(vals, dict):
             return vals[val]
         return vals.index(val)

@@ -59,22 +59,30 @@ def print_diff(diff) -> str:
 
     def write_property(key):
         prop = DIFF_DISPLAY[key]
-        result.write(Colors.BOLD)
-        result.write(prop['header'])
-        result.write("-" * len(prop['header']))
-        result.write("\n")
-        result.write(Colors.ENDC)
+
+        prop_header = True
 
         for attr_type in AttributeTypes.all():
-            write_attr_type_header(result, attr_type)
+            attr_header = True
 
             for tag in diff.properties(key):
                 tag_info = ArmAttributes.get_attr_info(tag)
                 if tag_info.attr_type() != attr_type:
                     continue
-                result.write(prop['color'])
                 attr_dict = diff.attrs(tag)
+                if prop_header:
+                    result.write(Colors.BOLD)
+                    result.write(prop['header'])
+                    result.write("-" * len(prop['header']))
+                    result.write("\n")
+                    result.write(Colors.ENDC)
+                    prop_header = False
 
+                if attr_header:
+                    write_attr_type_header(result, attr_type)
+                    attr_header = False
+
+                result.write(prop['color'])
                 result.write("{}\n".format(repr(tag_info)))
                 for val in attr_dict.keys():
                     write_tag_diff(result, attr_dict[val], tag_info, val)

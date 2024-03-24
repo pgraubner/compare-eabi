@@ -170,9 +170,9 @@ class Diff:
             self.__properties[p] = []
 
         for attr, val in self.__attrs.items():
-            if all_equal(val.values()):
-                if all_default(val.values()):
-                    continue
+            if all_default(val):
+                continue
+            elif all_equal(val.values()):
                 self.__properties['identical'].append(attr)
             elif all_equal_or_default(attr, val.values()):
                 #self.__properties['identical-or-default'].append(attr)
@@ -202,9 +202,8 @@ def all_equal_or_default(attr, elements):
             continue
         if not info.is_default(item):
             return False
-
     return True
 
 def all_default(elements):
-    return all(x == DEFAULT for x in elements)
+    return len(elements.keys()) == 1 and DEFAULT in elements
 
