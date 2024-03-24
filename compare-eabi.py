@@ -38,11 +38,12 @@ def print_objfile(objfile) -> str:
 
         write_attr_type_header(result, attr_type)
 
-        for attr, val in filtered_objfile.items():
+        for tag, val in filtered_objfile.items():
+            tag_info = ArmAttributes.get_attr_info(tag)
             if VERBOSE:
-                write_tag_verbose(result, attr, val)
+                write_tag_verbose(result, tag_info, val)
             else:
-                write_tag(result, attr, val)
+                write_tag(result, tag_info, val)
         result.write("\n")
 
     return result.getvalue()
@@ -68,15 +69,15 @@ def print_diff(diff) -> str:
             write_attr_type_header(result, attr_type)
 
             for tag in diff.properties(key):
-                info = ArmAttributes.get_attr_info(tag)
-                if info.attr_type() != attr_type:
+                tag_info = ArmAttributes.get_attr_info(tag)
+                if tag_info.attr_type() != attr_type:
                     continue
                 result.write(prop['color'])
                 attr_dict = diff.attrs(tag)
 
-                for fn, val in attr_dict.items():
-                    result.write("| {:<20} ".format( os.path.basename(fn)) )
-                    write_tag(result, tag, val)
+                result.write("{}\n".format(repr(tag_info)))
+                for val in attr_dict.keys():
+                    write_tag_diff(result, attr_dict[val], tag_info, val)
 
                 result.write(Colors.ENDC)
                 if VERBOSE:
@@ -96,23 +97,41 @@ def write_tag_verbose(result, tag, val):
     result.write(ArmAttributesDiagnostics.diagnostics(tag))
     result.write("\n")
 
-def write_tag(result, tag, val):
-    tag_info = ArmAttributes.get_attr_info(tag)
+def repr_value(tag_info, val):
+    if val == DEFAULT:
+        return "{} (Default)".format(tag_info.get_default())
+    return val
+
+def write_tag(result, tag_info, val):
     fmt = "| {:<30} | {:<50} | {:>5} | {:<7} |"
     if tag_info.is_string():
-        if val == DEFAULT:
-            val = "{} (Default)".format(tag_info.get_default())
-
-        result.write(fmt.format(tag, val, "", tag_info.datatype()))
+        num = ""
     else:
-        if val == DEFAULT:
-            val = "{} (Default)".format(tag_info.get_default())
-            num = 0
-        else:
-            num = tag_info.index(val)
-        result.write(fmt.format(tag, val, "{:#x}".format(num), tag_info.datatype()))
-
+        num = "{:#x}".format(tag_info.index(val))
+    result.write(fmt.format(repr(tag_info), repr_value(tag_info, val), num, tag_info.datatype()))
     result.write("\n")
+
+def repr_filenames(files):
+    fns = [os.path.basename(fn.filename()) for fn in files]
+    result = ", ".join(fns)
+    num_fns = 3
+    while len(result) > 60 and num_fns >= 1:
+        result = ", ".join(fns[:num_fns]) + ",... ({} more files)".format(len(fns)-num_fns)
+        num_fns -= 1
+    if num_fns == 0:
+        result = "..." + fns[0][-25:] + ",... ({} more files)".format(len(fns)-1)
+    return result
+
+def write_tag_diff(result, fns, tag_info, val):
+    #result.write("| {:<20} ".format( os.path.basename(fns.filename()) ) )
+    fmt = "| {:<30} | {:>5} | {:<7} | {:<50} |"
+    if tag_info.is_string():
+        num = ""
+    else:
+        num = "{:#x}".format(tag_info.index(val))
+    result.write(fmt.format(repr_value(tag_info, val), num, tag_info.datatype(), repr_filenames(fns)))
+    result.write("\n")
+
 
 def write_attr_type_header(result, attr_type):
     header = "{} attribute types".format(attr_type)
@@ -121,7 +140,6 @@ def write_attr_type_header(result, attr_type):
     result.write("\n" + "-" * len(header))
     result.write("\n")
     result.write(Colors.ENDC)
-
 
 def read_objfile(filename):
     out = subprocess.run([READELF, "-A", filename], stdout=subprocess.PIPE)
@@ -141,7 +159,6 @@ def read_archive(filename):
 def diff(objfiles):
     objs = ObjFileList.from_array(objfiles).filter_by_attr_type(*FILTER)
     print(print_diff(objs.compare()))
-
 
 def details(objfiles):
     for o in objfiles:

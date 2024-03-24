@@ -290,6 +290,10 @@ Tag_align_preserved = [
   "8-byte and up to 22-byte extended",
   "8-byte and up to 24-byte extended",
 ]
+Tag_nodefaults=["<undefined>"]
+Tag_FramePointer_use=["<undefined>"]
+Tag_BTI_use=["<undefined>"]
+Tag_PACRET_use=["<undefined>"]
 
 Tags_Config = {
     "Tag_File": (1, "uint32", None),
@@ -333,17 +337,17 @@ Tags_Config = {
     "Tag_MVE_arch": (48, "uleb128", Tag_MVE_arch),
     "Tag_PAC_extension": (50, "uleb128", Tag_PAC_extension),
     "Tag_BTI_extension": (52, "uleb128", Tag_BTI_extension),
-    "Tag_nodefaults": (64, "uleb128", None),
+    "Tag_nodefaults": (64, "uleb128", Tag_nodefaults),
     "Tag_also_compatible_with": (65, "NTBS", None),
     "Tag_conformance": (67, "NTBS", None),
     "Tag_T2EE_use": (66, "uleb128", Tag_T2EE_use),
     "Tag_Virtualization_use": (68, "uleb128", Tag_Virtualization_use),
-    "Tag_FramePointer_use": (72, "uleb128", None),
-    "Tag_BTI_use": (74, "uleb128", None),
-    "Tag_PACRET_use": (76, "uleb128", None),
+    "Tag_FramePointer_use": (72, "uleb128", Tag_FramePointer_use),
+    "Tag_BTI_use": (74, "uleb128", Tag_BTI_use),
+    "Tag_PACRET_use": (76, "uleb128", Tag_PACRET_use),
 }
 
 # TODO
-# "Tag_FramePointer_use": (72, "uleb128", None),
-# "Tag_BTI_use": (74, "uleb128", None),
-# "Tag_PACRET_use": (76, "uleb128", None),
+# "Tag_FramePointer_use": (72),
+# "Tag_BTI_use": (74),
+# "Tag_PACRET_use": (76),

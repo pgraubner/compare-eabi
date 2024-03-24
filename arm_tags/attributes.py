@@ -26,58 +26,95 @@ class AttributeTypes:
                 return key
         return None
 
-
-class AttributeInfo:
-    def __init__(self, name):
-        self.__name = name
-
-    def attr_type(self):
-        return AttributeTypes.get_attr_type(self.tag_index())
-
-    def datatype(self):
-        return Tags_Config[self.__name][1]
-
-    def is_string(self):
-        return Tags_Config[self.__name][1] == "NTBS"
-
-    def values(self):
-        vals = Tags_Config[self.__name][2]
-        if isinstance(vals, dict):
-            return vals.keys()
-        return vals
-
-    def get_default(self):
-        if self.is_string():
-            return '""'
-        assert Tags_Config[self.__name][2] is not None, "{}".format(self.__name)
-        vals = Tags_Config[self.__name][2]
-        if isinstance(vals, dict):
-            return vals.values[0]
-        return vals[0]
-
-    def index(self, val):
-        assert Tags_Config[self.__name][2] is not None, "{} {}".format(self.__name, val)
-        vals = Tags_Config[self.__name][2]
-        if val == DEFAULT:
-            val = vals[0]
-        if isinstance(vals, dict):
-            return vals[val]
-        return vals.index(val)
-
-    def tag_index(self):
-        return Tags_Config[self.__name][0]
-
 class ArmAttributes:
     @staticmethod
     def is_valid(tag):
         return tag in Tags_Config
 
     @staticmethod
-    def all():
+    def attr_names():
         return Tags_Config.keys()
 
     @staticmethod
     def get_attr_info(name):
-        return AttributeInfo(name)
+        if Tags_Config[name][1] == "NTBS":
+            return NtbsAttributeInfo(name)
+        else:
+            return NumericAttributeInfo(name)
 
+
+class AttributeInfo:
+    def __init__(self, name):
+        self._name = name
+
+    def __repr__(self):
+        return self._name
+
+    def is_default(self, val):
+        if val == DEFAULT:
+            return True
+        if val == self.get_default():
+            return True
+        return False
+
+    def datatype(self):
+        raise NotImplementedError()
+
+    def is_string(self):
+        raise NotImplementedError()
+
+    def get_default(self):
+        raise NotImplementedError()
+
+    def attr_type(self):
+        return AttributeTypes.get_attr_type(self.tag_index())
+
+    def values(self):
+        vals = Tags_Config[self._name][2]
+        if isinstance(vals, dict):
+            return vals.keys()
+        return vals
+
+    def tag_index(self):
+        return Tags_Config[self._name][0]
+
+
+class NtbsAttributeInfo(AttributeInfo):
+    def __init__(self, name):
+        super(NtbsAttributeInfo, self).__init__(name)
+
+    def datatype(self):
+        return "NTBS"
+
+    def is_string(self):
+        return True
+
+    def get_default(self):
+        return '""'
+
+
+class NumericAttributeInfo(AttributeInfo):
+    def __init__(self, name):
+        super(NumericAttributeInfo, self).__init__(name)
+
+    def datatype(self):
+        return "uleb128"
+
+    def is_string(self):
+        return False
+
+    def get_default(self):
+        assert Tags_Config[self._name][2] is not None, "{}".format(self._name)
+        vals = Tags_Config[self._name][2]
+        if isinstance(vals, dict):
+            return list(vals.values())[0]
+        return vals[0]
+
+    def index(self, val):
+        vals = Tags_Config[self._name][2]
+        if val == DEFAULT:
+            val = vals[0]
+        if isinstance(vals, dict):
+            return vals[val]
+        return vals.index(val)
 

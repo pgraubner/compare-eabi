@@ -1,5 +1,6 @@
 
 from arm_tags.attributes import DEFAULT, ArmAttributes
+from collections import defaultdict
 
 class ObjFileList:
     """
@@ -31,22 +32,14 @@ class ObjFileList:
         return self.__objfiles
 
     def compare(self):
-        objs = []
-        for o in self.__objfiles:
-            if o.is_archive():
-                objs.append(o.collect())
-                #objs += o.objfiles()
-            else:
-                objs.append(o)
-
         attrs = {}
-        for tag in ArmAttributes.all():
-            attrs[tag] = {}
-            for obj in objs:
+        for tag in ArmAttributes.attr_names():
+            attrs[tag] = defaultdict(list)
+            for obj in self.__objfiles:
                 val = DEFAULT
                 if tag in obj.attrs():
                     val = obj.attrs()[tag]
-                attrs[tag][obj.filename()] = val
+                attrs[tag][val].append(obj)
 
         result = Diff(attrs)
         return result
@@ -70,23 +63,6 @@ class ArchiveFile:
 
     def objfiles(self):
         return self.__objfiles.objfiles()
-
-    # def collect(self):
-    #     attrs = {}
-    #     for tag in Attributes.all():
-    #         val = None
-    #         for obj in self.__objfiles.objfiles():
-    #             if tag in obj.attrs():
-    #                 if val is None:
-    #                     val = obj.attrs()[tag]
-    #                 else:
-    #                     assert val == obj.attrs()[tag]
-    #                 break
-    #         if val is not None:
-    #             attrs[tag] = val
-
-    #     result = ObjFile(self.__fn, attrs)
-    #     return result
 
     @staticmethod
     def from_buf(filename, buf):
@@ -127,7 +103,7 @@ class ObjFile:
 
     def filter_by_attr_type(self, *attr_type):
         result = {}
-        for attr in ArmAttributes.all():
+        for attr in ArmAttributes.attr_names():
             if attr not in self.__attrs:
                 continue
             val = self.__attrs[attr]
@@ -198,9 +174,9 @@ class Diff:
                 if all_default(val.values()):
                     continue
                 self.__properties['identical'].append(attr)
-            elif all_equal_or_default(val.values()):
+            elif all_equal_or_default(attr, val.values()):
                 #self.__properties['identical-or-default'].append(attr)
-                self.__properties['non-identical'].append(attr)
+                self.__properties['identical'].append(attr)
             else:
                 self.__properties['non-identical'].append(attr)
 
@@ -219,15 +195,13 @@ def all_equal(elements):
             return False
     return True
 
-def all_equal_or_default(elements):
-    first = DEFAULT
+def all_equal_or_default(attr, elements):
+    info = ArmAttributes.get_attr_info(attr)
     for item in elements:
         if item == DEFAULT:
             continue
-        if item != first:
-            if first != DEFAULT:
-                return False
-            first = item
+        if not info.is_default(item):
+            return False
 
     return True
 
