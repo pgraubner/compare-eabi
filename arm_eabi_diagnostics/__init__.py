@@ -274,8 +274,7 @@ standard configuration used. Its value must be consistent with the values
 given to the tags below, and must not be used as a macro in place of them.
 """,
    "Tag_ABI_PCS_R9_use": """
-Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
-entity to address static data.
+Procedure call-related attribute describing compatibility with the ABI.Summarizes how the user intended the attributed entity to address static data.
 
        0  R9 used as V6 (just another callee-saved register, implied by omitting the tag)
        1  R9 used as SB, a global Static Base register
@@ -295,8 +294,7 @@ The role played by that ``TPID*`` register is defined by the software platformâ€
 ABI.
 """,
    "Tag_ABI_PCS_RW_data": """
-Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
-entity to address static data.
+Procedure call-related attribute describing compatibility with the ABI.Summarizes how the user intended the attributed entity to address static data.
 
        0  RW static data was permitted to be addressed absolutely
        1  RW static data was only permitted to be addressed PC-relative
@@ -304,15 +302,13 @@ entity to address static data.
        3  The user did not permit this entity to use RW static data
 """,
    "Tag_ABI_PCS_RO_data": """
-Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
-entity to address static data.
+Procedure call-related attribute describing compatibility with the ABI.Summarizes how the user intended the attributed entity to address static data.
        0  RO static data was permitted to be addressed absolutely
        1  RO static data was only permitted to be addressed PC-relative
        2  The user did not permit this entity to use RO static data
 """,
    "Tag_ABI_PCS_GOT_use": """
-Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed
-entity to address static data.
+Procedure call-related attribute describing compatibility with the ABI.Summarizes how the user intended the attributed entity to address static data.
        0  The user did not permit this entity to import static data
        1  The user permitted this entity to address imported data directly
        2  The user permitted this entity to address imported data indirectly (e.g. via a GOT)

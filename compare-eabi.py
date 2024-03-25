@@ -189,7 +189,7 @@ FILTER = AttributeTypes.all()
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                         prog='compare-eabi',
-                        description='compare-eabi helps interpreting ARM Attributes in objects file for the ARM32 ABI')
+                        description='compare-eabi helps comparing and interpreting ARM32 ABI attributes from objects files')
     parser.add_argument('--readelf', nargs=1, help="path to a ARM compliant readelf binutils tool")
     parser.add_argument('--textfiles', nargs='+', help="parse text files previously created with 'readelf -A <objfile>'")
     parser.add_argument('--objfiles', nargs='+', help="parse object files and archives by calling 'readelf -A <objfile>'")
