@@ -6,5 +6,5 @@ File Attributes
   Tag_CPU_arch_profile: Application
   Tag_ARM_ISA_use: Yes
   Tag_THUMB_ISA_use: Thumb-2
-  Tag_ABI_PCS_RW_data: SB-relative
+  Tag_ABI_PCS_GOT_use: GOT-indirect
   Tag_Virtualization_use: TrustZone
