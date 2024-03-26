@@ -14,16 +14,19 @@ rule readelf-arch
    command = arm-none-eabi-readelf -A $in > $out
    description = readelf $in
 
-build objects/cortex-m/simple.o: as source/cortex-m/simple.S
+build objects/cortex-m3-simple.o: as source/arm32/cortex-m3-simple.S
     cflags = -mcpu=cortex-m3
-#build cortex-m/simple.o.readelf: readelf objects/cortex-m/simple.o
-build cortex-m-simple.o.txt: readelf-arch objects/cortex-m/simple.o
+build info/cortex-m3-simple: readelf objects/cortex-m3-simple.o
+build arch/cortex-m3-simple: readelf-arch objects/cortex-m3-simple.o
 
-build objects/cortex-a8/simple.o: as source/cortex-a8/simple.S
+build objects/cortex-a8-simple.o: as source/arm32/cortex-a8-simple.S
     cflags = -mcpu=cortex-a8
-#build cortex-a8/simple.o.readelf: readelf objects/cortex-a8/simple.o
-build cortex-a8-simple.o.txt: readelf-arch objects/cortex-a8/simple.o
+build objects/cortex-a8-simple-fp.o: as source/arm32/cortex-a8-simple-fp.S
+    cflags = -mcpu=cortex-a8
+build info/cortex-a8-simple: readelf objects/cortex-a8-simple.o
+build arch/cortex-a8-simple: readelf-arch objects/cortex-a8-simple.o
+build arch/cortex-a8-simple-fp: readelf-arch objects/cortex-a8-simple-fp.o
 
-build objects/cortex-a72/simple.o: as64 source/cortex-a72/simple.S
+build objects/cortex-a72-simple.o: as64 source/aarch64/cortex-a72-simple.S
     cflags = -mcpu=cortex-a72
-#build cortex-a72/simple.o.readelf: readelf objects/cortex-a72/simple.o
+build info/cortex-a72-simple: readelf objects/cortex-a72-simple.o

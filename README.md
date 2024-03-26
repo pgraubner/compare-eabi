@@ -9,7 +9,7 @@ compare-eabi helps comparing and interpreting ARM32 ABI Attributes from objects 
 > python3 compare-eabi.py --help
 
 # run an example with previously generated text files from the examples/ folder.
-> python3 compare-eabi.py --textfiles examples/cortex-*/* --diff
+> python3 compare-eabi.py --textfiles examples/arch/* --diff
 
 Tags with non-identical values (possibly conflicting)
 ------------------------------------------------------
