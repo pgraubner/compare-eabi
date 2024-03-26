@@ -1,0 +1,29 @@
+rule as
+   command = arm-none-eabi-as $cflags -o $out $in
+   description = GNU ARM32 assembler $out
+
+rule as64
+   command = aarch64-none-elf-as $cflags -o $out $in
+   description = GNU aarch64 assembler $out
+
+rule readelf
+   command = aarch64-none-elf-readelf -a $in > $out
+   description = readelf $in
+
+rule readelf-arch
+   command = arm-none-eabi-readelf -A $in > $out
+   description = readelf $in
+
+build objects/cortex-m/simple.o: as source/cortex-m/simple.S
+    cflags = -mcpu=cortex-m3
+#build cortex-m/simple.o.readelf: readelf objects/cortex-m/simple.o
+build cortex-m-simple.o.txt: readelf-arch objects/cortex-m/simple.o
+
+build objects/cortex-a8/simple.o: as source/cortex-a8/simple.S
+    cflags = -mcpu=cortex-a8
+#build cortex-a8/simple.o.readelf: readelf objects/cortex-a8/simple.o
+build cortex-a8-simple.o.txt: readelf-arch objects/cortex-a8/simple.o
+
+build objects/cortex-a72/simple.o: as64 source/cortex-a72/simple.S
+    cflags = -mcpu=cortex-a72
+#build cortex-a72/simple.o.readelf: readelf objects/cortex-a72/simple.o

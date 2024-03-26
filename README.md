@@ -9,27 +9,20 @@ compare-eabi helps comparing and interpreting ARM32 ABI Attributes from objects 
 > python3 compare-eabi.py --help
 
 # run an example with previously generated text files from the examples/ folder.
-> python3 compare-eabi.py --textfiles examples/cortex-m/* --diff
+> python3 compare-eabi.py --textfiles examples/cortex-*/* --diff
 
 Tags with non-identical values (possibly conflicting)
 ------------------------------------------------------
 ...
-procedure-call attribute types
+target-related attribute types
 ------------------------------
-Tag_ABI_PCS_GOT_use
-| direct                         |   0x1 | uleb128 | librust_app.a.txt          |
-| None (Default)                 |   0x0 | uleb128 | log_output.c.              |
+Tag_ARM_ISA_use
+| Yes                            |   0x1 | uleb128 | cortex-a8-simple.o.txt     |
+| No (Default)                   |   0x0 | uleb128 | cortex-m-simple.o.         |
 ...
 
 # explain attribute with arm_eabi_diagnostics
-> python3 compare-eabi.py --explain Tag_ABI_PCS_GOT_use
-
- Tag_ABI_PCS_GOT_use
-
-Procedure call-related attribute describing compatibility with the ABI. Summarizes how the user intended the attributed entity to address static data.
-       0  The user did not permit this entity to import static data
-       1  The user permitted this entity to address imported data directly
-       2  The user permitted this entity to address imported data indirectly (e.g. via a GOT)
+> python3 compare-eabi.py --explain Tag_ARM_ISA_use
 ```
 
 ## License
